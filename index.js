@@ -52,7 +52,8 @@ function createReq(path, options) {
       cookies: {},
       query: options.query || {},
       url: path,
-      headers: {}
+      headers: {},
+      body: options.body || {}
     },
     options
   );
