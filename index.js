@@ -4,20 +4,20 @@ var request = require("express/lib/request");
 
 module.exports = function(app) {
   app.use((req, res, next) => {
-    req.runMiddleware = (path, options, callback) => {
+    req.runMiddleware = (path, options, query, callback) => {
       if (_.isFunction(options)) {
         callback = options;
         options = {};
       }
       options.original_req = req;
       options.original_res = res;
-      app.runMiddleware(path, options, callback);
+      app.runMiddleware(path, options, query, callback);
     };
     next();
   });
   if (app.runMiddleware) return; // Do not able to add us twice
 
-  app.runMiddleware = function(path, options, callback) {
+  app.runMiddleware = function(path, options, query, callback) {
     if (callback) callback = _.once(callback);
     if (typeof options == "function") {
       callback = options;
@@ -25,6 +25,7 @@ module.exports = function(app) {
     }
     options = options || {};
     options.url = path;
+    options.query = query;
     var new_req, new_res;
     if (options.original_req) {
       new_req = options.original_req;
@@ -49,9 +50,9 @@ function createReq(path, options) {
       method: "GET",
       host: "",
       cookies: {},
-      query: {},
+      query: options.query || {},
       url: path,
-      headers: {},
+      headers: {}
     },
     options
   );
@@ -61,9 +62,9 @@ function createReq(path, options) {
 }
 function createRes(callback) {
   var res = {
-    _removedHeader: {},
+    _removedHeader: {}
   };
-  res=_.extend(res,require('express/lib/response'));
+  res = _.extend(res, require("express/lib/response"));
 
   var headers = {};
   var code = 200;
@@ -76,15 +77,15 @@ function createRes(callback) {
       }
     }
     return res;
-  }
+  };
   res.setHeader = (x, y) => {
     headers[x] = y;
     headers[x.toLowerCase()] = y;
     return res;
   };
-  res.get=(x) => {
-  	return headers[x]
-  }
+  res.get = x => {
+    return headers[x];
+  };
   res.redirect = function(_code, url) {
     if (!_.isNumber(_code)) {
       code = 301;
