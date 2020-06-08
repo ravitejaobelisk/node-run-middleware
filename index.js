@@ -63,7 +63,7 @@ function createRes(callback) {
   var res = {
     _removedHeader: {},
   };
-  // res=_.extend(res,require('express/lib/response'));
+  res=_.extend(res,require('express/lib/response'));
 
   var headers = {};
   var code = 200;
@@ -82,9 +82,9 @@ function createRes(callback) {
     headers[x.toLowerCase()] = y;
     return res;
   };
-  // res.get=(x) => {
-  // 	return headers[x]
-  // }
+  res.get=(x) => {
+  	return headers[x]
+  }
   res.redirect = function(_code, url) {
     if (!_.isNumber(_code)) {
       code = 301;
