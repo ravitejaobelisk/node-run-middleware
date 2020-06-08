@@ -47,7 +47,7 @@ function createReq(path, options) {
   if (!options) options = {};
   var req = _.extend(
     {
-      method: "GET",
+      method: options.method || "GET",
       host: "",
       cookies: {},
       query: options.query || {},
